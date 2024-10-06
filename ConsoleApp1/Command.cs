@@ -25,7 +25,7 @@ namespace ConsoleApp1
         IRotable _rotate;
         public RotateCommand(IRotable obj) { _rotate = obj; }
 
-        public void Execute() => throw new IOException(); //_rotate.SetDirection((_rotate.GetDirection() + _rotate.GetAngularVelocity()) % _rotate.GetDirectionsNumber());
+        public void Execute() => _rotate.SetDirection((_rotate.GetDirection() + _rotate.GetAngularVelocity()) % _rotate.GetDirectionsNumber());
     }
 
     public class ConsoleOutCommand : ICommand
