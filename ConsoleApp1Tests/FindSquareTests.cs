@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ConsoleApp1;
+using SpaceBattle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.ComponentModel.DataAnnotations;
 
-namespace ConsoleApp1.Tests
+namespace SpaceBattle.Tests
 {
     [TestClass()]
     public class FindSquareTests

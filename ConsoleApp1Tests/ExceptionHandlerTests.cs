@@ -1,11 +1,13 @@
-﻿using Moq;
+﻿using commands;
+using SpaceBattle.Commands;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1.Tests
+namespace SpaceBattle.Tests
 {
     [TestClass]
     public class ExceptionHandlerTests
