@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleApp1.Interfaces;
 
 namespace ConsoleApp1
 {
@@ -68,5 +69,78 @@ namespace ConsoleApp1
         ICommand _command;
         public SecondRetryCommand(ICommand c) { _command = c; }
         public void Execute() => _command.Execute();
+    }
+
+    public class CheckFuelCommand : ICommand
+    {
+        IFuelCheckable _fuel;
+        public CheckFuelCommand(IFuelCheckable obj) { _fuel = obj; }
+
+        public void Execute()
+        {
+            if (!_fuel.Check())
+                throw new CommandException();
+        }
+    }
+
+    public class BurnFuelCommand : ICommand
+    {
+        IFuelBurnable _fuel;
+        public BurnFuelCommand(IFuelBurnable obj) { _fuel = obj; }
+
+        public void Execute() => _fuel.Burn();
+    }
+
+    public class MoveAndBurnFuelCommand : ICommand
+    {
+        MacroCommand _macrocommand;
+        public MoveAndBurnFuelCommand(IFuelCheckable checkable, IMovable movable, IFuelBurnable burnable)
+        {
+            List<ICommand> cmds = new List<ICommand>()
+            {
+                new CheckFuelCommand(checkable),
+                new MoveCommand(movable),
+                new BurnFuelCommand(burnable),
+            };
+
+            _macrocommand = new MacroCommand(cmds);
+        }
+
+        public void Execute() => _macrocommand.Execute();
+    }
+
+    public class ChangeVelocityCommand : ICommand
+    {
+        IChangeVelocity _changeVelosity;
+        Vector2 _velocity = Vector2.Zero;
+        public ChangeVelocityCommand(IChangeVelocity obj, Vector2 newV)
+        {
+            _changeVelosity = obj;
+            _velocity = newV;
+        }
+
+        public void Execute() => _changeVelosity.SetVelocity(_velocity);
+    }
+
+    public class MacroCommand : ICommand
+    {
+        IEnumerable<ICommand> _cmds;
+
+        public MacroCommand(IEnumerable<ICommand> cmds) { _cmds = cmds; }
+
+        public void Execute()
+        {
+            foreach (var cmd in _cmds)
+            {
+                try
+                {
+                    cmd.Execute();
+                }
+                catch (Exception)
+                {
+                    throw new CommandException();
+                }
+            }
+        }
     }
 }
