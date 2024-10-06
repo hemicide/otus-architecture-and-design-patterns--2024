@@ -3,3 +3,9 @@
 /ConsoleApp1Tests/bin
 /ConsoleApp1Tests/obj
 /.vs
+/commands/bin
+/commands/obj
+/factory/obj
+/factory/bin
+/scopes/obj
+/scopes/bin

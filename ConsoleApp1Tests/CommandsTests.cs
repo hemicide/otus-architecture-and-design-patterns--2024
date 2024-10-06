@@ -1,4 +1,6 @@
-﻿using ConsoleApp1.Interfaces;
+﻿using commands;
+using SpaceBattle.Commands;
+using SpaceBattle.Interfaces;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1.Tests
+namespace SpaceBattle.Tests
 {
     [TestClass()]
     public class CommandsTests

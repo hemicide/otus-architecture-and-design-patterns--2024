@@ -4,9 +4,9 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleApp1.Interfaces;
+using SpaceBattle.Interfaces;
 
-namespace ConsoleApp1
+namespace SpaceBattle
 {
     public class SpaceShip : IMovable, IRotable, IFuelBurnable, IFuelCheckable, IChangeVelocity
     {

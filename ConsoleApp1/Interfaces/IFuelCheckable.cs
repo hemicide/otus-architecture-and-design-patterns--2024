@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp1.Interfaces
+﻿namespace SpaceBattle.Interfaces
 {
     public interface IFuelCheckable
     {
