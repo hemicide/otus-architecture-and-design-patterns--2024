@@ -69,13 +69,24 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
-        public void IoC_Should_Use_Local_Scope()
+        public void IoC_Should_Use_Local_Scope_With_Multithread_Mode()
         {
-            var IoCScope = IoC.Resolve<object>("IoC.Scope.Create");
-            IoC.Resolve<ICommand>("IoC.Scope.Current.Set", IoCScope).Execute();
-            IoC.Resolve<ICommand>("IoC.Register", "a", (object[] args) => (object)1).Execute();
-            Assert.AreEqual(1, IoC.Resolve<int>("a"));
-            IoC.Resolve<ICommand>("IoC.Scope.Current.Clear").Execute();
+            var testdata = new[]
+            {
+               new { dependency = "a", args = new object[] { 1 }, want = 1 },
+               new { dependency = "a", args = new object[] { 2 }, want = 2 },
+            };
+
+            var tf = new TaskFactory();
+            foreach (var test in testdata)
+            {
+                Task myTask = tf.StartNew(() => {
+                    var IoCScope = IoC.Resolve<object>("IoC.Scope.Create");
+                    IoC.Resolve<ICommand>("IoC.Scope.Current.Set", IoCScope).Execute();
+                    IoC.Resolve<ICommand>("IoC.Register", test.dependency, test.args).Execute();
+                    Assert.AreEqual(test.want, IoC.Resolve<int>(test.dependency));
+                });
+            }
         }
     }
 }
