@@ -1,6 +1,7 @@
 ﻿using commands;
 using factory;
 using SpaceBattle.Commands;
+using SpaceBattle.Interfaces;
 using System;
 using System.Numerics;
 
@@ -23,6 +24,8 @@ namespace SpaceBattle
             var rotateCommand = IoC.Resolve<ICommand>("Commands.Rotate", spaceShip);
             var moveAndBurnFuelCommand = IoC.Resolve<ICommand>("Commands.MoveAndBurnFuel", spaceShip);
             var rotateAndChangeVelocityCommand = IoC.Resolve<ICommand>("Commands.RotateAndChangeVelocity", spaceShip);
+
+            var adapter = IoC.Resolve<object>("Adapter", typeof(IMovable), spaceShip);
 
             CommandCollection.Add(moveCommand);
             CommandCollection.Add(rotateCommand);
@@ -78,6 +81,16 @@ namespace SpaceBattle
                     cmds[i] = IoC.Resolve<ICommand>(commandsString[i], args[0]);
 
                 return IoC.Resolve<ICommand>("MacroCommand", cmds);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "Adapter", (object[] args) => {
+                Type intType = (Type)args[0];
+
+                var t = AutoGenerate.CreateNewObject(intType);
+                var f = t.GetType().GetMethod("GetPosition");
+                var g = f.Invoke(t, null);
+
+                return (object)1;
             }).Execute();
         }
 
