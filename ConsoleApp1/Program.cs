@@ -88,10 +88,24 @@ namespace SpaceBattle
 
                 var t = AutoGenerate.CreateNewObject(intType);
                 var f = t.GetType().GetMethod("GetPosition");
-                var g = f.Invoke(t, null);
+                //var g = f.Invoke(t, []);
+
+                //var adapter = AdapterGenerator.CreateAdapter<IExample>();
+                //adapter.MethodA();
+                //int result = adapter.MethodB("test");
+
+                var adapter2 = (IMovable)AdapterGenerator.CreateAdapter(intType, args[1]);
+                var b = adapter2.GetPosition();
+                //int result = adapter.MethodB("test");
 
                 return (object)1;
             }).Execute();
+        }
+
+        public interface IExample
+        {
+            void MethodA();
+            int MethodB(string input);
         }
 
         static void RegisterExceptionHandlers()
