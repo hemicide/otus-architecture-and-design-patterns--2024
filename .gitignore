@@ -9,3 +9,6 @@
 /factory/bin
 /scopes/obj
 /scopes/bin
+/TestResults
+/generators/bin
+/generators/obj

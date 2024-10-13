@@ -1,8 +1,11 @@
 ﻿using commands;
 using factory;
 using SpaceBattle.Commands;
+using SpaceBattle.Interfaces;
 using System;
 using System.Numerics;
+using generators;
+using System.Net.Http.Headers;
 
 namespace SpaceBattle 
 {
@@ -24,12 +27,25 @@ namespace SpaceBattle
             var moveAndBurnFuelCommand = IoC.Resolve<ICommand>("Commands.MoveAndBurnFuel", spaceShip);
             var rotateAndChangeVelocityCommand = IoC.Resolve<ICommand>("Commands.RotateAndChangeVelocity", spaceShip);
 
+            // ...
+
             CommandCollection.Add(moveCommand);
             CommandCollection.Add(rotateCommand);
             CommandCollection.Add(moveAndBurnFuelCommand);
             CommandCollection.Add(rotateAndChangeVelocityCommand);
 
             CommandCollection.LoopUntilNotEmpty();
+
+            // Генерация адаптора по интерфейсу
+
+            IUObject uobject = new UObject();
+            uobject.SetProperty("velocity", 10);
+            uobject.SetProperty("angle", 5);
+
+            var adapter = IoC.Resolve<IMovable>("Adapter", typeof(IMovable), uobject);
+            adapter.SetPosition(new Vector2(15, 15));
+            var newpos = adapter.GetPosition();
+            var velocity = adapter.GetVelocity();
         }
 
         static void DependencyResolve(SpaceShip spaceShip)
@@ -79,6 +95,41 @@ namespace SpaceBattle
 
                 return IoC.Resolve<ICommand>("MacroCommand", cmds);
             }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "IMovable.SetPosition", (object[] args) => {
+                //((UObject)args[0]).SetProperty("location", args[1]);
+                //return (object)true;
+
+                return new SetPropertyCommand((UObject)args[0], "location", args[1]);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetPosition", (object[] args) => {
+                return ((IUObject)args[0]).GetProperty("location");
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetVelocity", (object[] args) => {
+                var velocity = (int)((IUObject)args[0]).GetProperty("velocity");
+                var angle = (int)((IUObject)args[0]).GetProperty("angle");
+                var x = velocity * Math.Cos(angle);
+                var y = velocity * Math.Sin(angle);
+                return (object)new Vector2((float)x, (float)y);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "Adapter", (object[] args) => {
+                Type intType = (Type)args[0];
+                var proxyType = CompileAssembly.CreateProxyType(intType);
+                var instance = Activator.CreateInstance(proxyType, args[1]);
+                
+                CompileAssembly.UnloadAssembly();
+
+                return instance; //Activator.CreateInstance(proxyType, args[1]);
+            }).Execute();
+        }
+
+        public interface IExample
+        {
+            void MethodA();
+            int MethodB(string input);
         }
 
         static void RegisterExceptionHandlers()
