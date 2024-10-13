@@ -16,6 +16,7 @@ namespace SpaceBattle.Tests
     [TestClass]
     public class AdapterGeneratorTests
     {
+
         [TestInitialize]
         public void Initialize()
         {
@@ -31,7 +32,7 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
-        public void IoC_Should_Resolve_Registered_Dependency_For_Created_AdapterInstance()
+        public void AdapterGenerator_Created_AdapterInstance()
         {
             IUObject uobject = new UObject();
 
@@ -45,7 +46,7 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
-        public void IoC_Should_Resolve_Registered_Dependency_Movable_GetPosition()
+        public void AdapterGenerator_GetPosition()
         {
             var testdata = new
             {
@@ -74,7 +75,7 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
-        public void IoC_Should_Resolve_Registered_Dependency_Movable_SetPosition()
+        public void AdapterGenerator_SetPosition()
         {
             var testdata = new
             {
@@ -92,8 +93,11 @@ namespace SpaceBattle.Tests
                 return Activator.CreateInstance(proxyType, args[1]);
             }).Execute();
 
-            IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetPosition", (object[] args) => {
+            IoC.Resolve<ICommand>("IoC.Register", "IMovable.SetPosition", (object[] args) => {
                 return new SetPropertyCommand((UObject)args[0], "location", args[1]);
+            }).Execute();
+            IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetPosition", (object[] args) => {
+                return ((IUObject)args[0]).GetProperty("location");
             }).Execute();
 
             var adapter = IoC.Resolve<IMovable>("Adapter", typeof(IMovable), uobject);
@@ -103,7 +107,7 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
-        public void IoC_Should_Resolve_Registered_Dependency_Movable_GetVelocity()
+        public void AdapterGenerator_GetVelocity()
         {
             var testdata = new
             {

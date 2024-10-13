@@ -1,5 +1,6 @@
 ﻿using SpaceBattle.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,8 @@ namespace SpaceBattle
 
         public void SetProperty(string key, object value)
         {
-            _dictionary.TryAdd(key, value); 
+            if (!_dictionary.TryAdd(key, value))
+                _dictionary[key] = value;
         }
     }
 }

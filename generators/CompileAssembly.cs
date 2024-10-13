@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Loader;
 
 namespace generators
 {
@@ -85,7 +86,7 @@ namespace generators
 
             // Определяем параметры компиляции
             var references = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic)
+                .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
                 .Select(a => MetadataReference.CreateFromFile(a.Location))
                 .ToList();
 
@@ -101,8 +102,7 @@ namespace generators
             if (!result.Success)
                 throw new InvalidOperationException(string.Join("\r\n", result.Diagnostics.Select(r => r.GetMessage())));
 
-
-            ms.Seek(0, System.IO.SeekOrigin.Begin);
+            ms.Seek(0, SeekOrigin.Begin);
             return Assembly.Load(ms.ToArray());
         }
     }
