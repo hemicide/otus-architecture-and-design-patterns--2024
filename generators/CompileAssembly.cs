@@ -15,6 +15,7 @@ namespace generators
 {
     public class CompileAssembly
     {
+        private static CustomAssemblyLoadContext _assemblyLoadContext;
 
         public static Type CreateProxyType<T>()
         {
@@ -25,11 +26,17 @@ namespace generators
         {
             var className = $"{interfaceType.Name}Adapter";
             var classCode = GenerateClassCode(interfaceType, className);
-            var assembly = CompileCode(classCode);
+            _assemblyLoadContext = new CustomAssemblyLoadContext();
+            var assembly = _assemblyLoadContext.CompileAndLoad(classCode);
 
             return assembly.GetType(className);
         }
 
+        public static void UnloadAssembly()
+        {
+            if (_assemblyLoadContext != null)
+                _assemblyLoadContext.Unload();
+        }
 
         private static string GenerateClassCode(Type interfaceType, string className)
         {
@@ -102,8 +109,10 @@ namespace generators
             if (!result.Success)
                 throw new InvalidOperationException(string.Join("\r\n", result.Diagnostics.Select(r => r.GetMessage())));
 
+
             ms.Seek(0, SeekOrigin.Begin);
-            return Assembly.Load(ms.ToArray());
+            return AssemblyLoadContext.Default.LoadFromStream(ms);
+            //return Assembly.Load(ms.ToArray());
         }
     }
 }

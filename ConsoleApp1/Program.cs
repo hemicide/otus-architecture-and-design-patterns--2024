@@ -118,7 +118,11 @@ namespace SpaceBattle
             IoC.Resolve<ICommand>("IoC.Register", "Adapter", (object[] args) => {
                 Type intType = (Type)args[0];
                 var proxyType = CompileAssembly.CreateProxyType(intType);
-                return Activator.CreateInstance(proxyType, args[1]);
+                var instance = Activator.CreateInstance(proxyType, args[1]);
+                
+                CompileAssembly.UnloadAssembly();
+
+                return instance; //Activator.CreateInstance(proxyType, args[1]);
             }).Execute();
         }
 
