@@ -13,10 +13,4 @@ namespace SpaceBattle.Interfaces
         Vector2 GetVelocity();
         void SetPosition(Vector2 newV);
     }
-
-    public interface IMovable2
-    {
-        Vector2 GetPosition();
-        Vector2 GetVelocity();
-    }
 }

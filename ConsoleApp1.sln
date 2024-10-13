@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceBattle", "ConsoleApp1\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "ConsoleApp1Tests\Tests.csproj", "{2AB31105-F2C1-4B94-86AD-36A4EA130D11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scopes", "scopes\scopes.csproj", "{5EA8849F-4066-4A93-B9BC-16AE5D53628F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "scopes", "scopes\scopes.csproj", "{5EA8849F-4066-4A93-B9BC-16AE5D53628F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "commands", "commands\commands.csproj", "{B79DC004-9C04-476A-9DD1-EAA1674E24C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "commands", "commands\commands.csproj", "{B79DC004-9C04-476A-9DD1-EAA1674E24C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "factory", "factory\factory.csproj", "{BB9304DA-2CA3-409B-8FB2-44FEEB87A690}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "factory", "factory\factory.csproj", "{BB9304DA-2CA3-409B-8FB2-44FEEB87A690}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generators", "generators\generators.csproj", "{D213CF07-F492-43A0-A7F1-F4D518E71CEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BB9304DA-2CA3-409B-8FB2-44FEEB87A690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB9304DA-2CA3-409B-8FB2-44FEEB87A690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB9304DA-2CA3-409B-8FB2-44FEEB87A690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D213CF07-F492-43A0-A7F1-F4D518E71CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D213CF07-F492-43A0-A7F1-F4D518E71CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D213CF07-F492-43A0-A7F1-F4D518E71CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D213CF07-F492-43A0-A7F1-F4D518E71CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
