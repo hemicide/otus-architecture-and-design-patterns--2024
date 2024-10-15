@@ -12,6 +12,8 @@ namespace SpaceBattle
     {
         public static BlockingCollection<ICommand>? _collection;
         private static int _countTake = 0;
+        private static bool _runLoop = false;
+        private static Func<bool> _predicateRun = () => false;
 
         public static void Init() => _collection = new BlockingCollection<ICommand>();
 
@@ -21,16 +23,46 @@ namespace SpaceBattle
             _collection!.Add(cmd);
         }
 
-        public static void LoopInfinity() => Loop(() => false);
-        public static void LoopPerCount(int count) => Loop(() => _countTake < count);
-        public static void LoopUntilNotEmpty() => Loop(() => !CollectionIsEmpty());
-
-        public static void Loop(Func<bool> stop)
+        public static void LoopInfinity()
         {
-            while (stop())
+            _predicateRun = () => true;
+            Loop();
+        }
+        public static void LoopPerCount(int count) 
+        {
+            _predicateRun = () => _countTake < count;
+            Loop();
+        }
+        public static void LoopUntilNotEmpty()
+        {
+            _predicateRun = () => !CollectionIsEmpty();
+            Loop();
+        }
+
+        public static void BackgroundLoop()
+        {
+            new Thread(() =>
             {
-                if (CollectionIsNull())
-                    return;
+                LoopInfinity();
+            }).Start();
+        }
+
+        public static void Stop(bool force = false)
+        {
+            if (force)
+                _predicateRun = () => false;
+            else
+                _predicateRun = () => !CollectionIsEmpty();
+        }
+
+        private static void Loop()
+        {
+            if (CollectionIsNull())
+                return;
+
+            while (_predicateRun())
+            {
+
 
                 var cmd = _collection!.Take();
                 try
@@ -41,7 +73,8 @@ namespace SpaceBattle
                 {
                     ExceptionHandler.Handle(cmd, ex).Execute();
                 }
-                _countTake++;
+
+                Interlocked.Increment(ref _countTake);
             }
         }
 
