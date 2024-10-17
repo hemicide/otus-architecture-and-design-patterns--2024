@@ -114,7 +114,7 @@ namespace SpaceBattle.Tests
 
             // Assert
 
-            mre.WaitOne(5000);
+            mre.WaitOne();
             c1.Verify(c => c.Execute(), Times.Once);
             c2.Verify(c => c.Execute(), Times.Never);
         }

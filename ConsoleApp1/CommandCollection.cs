@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 
 namespace SpaceBattle
 {
+
     public class CommandCollection
     {
         public static BlockingCollection<ICommand>? _collection;
         private static int _countTake = 0;
-        private static bool _runLoop = false;
-        private static Func<bool> _predicateRun = () => false;
+        private static bool _stop = false;
+        private static Func<bool> _predicate = () => true;
 
-        public static void Init() => _collection = new BlockingCollection<ICommand>();
+        public static void Init()
+        {
+            _collection = new BlockingCollection<ICommand>();
+        }
 
         public static void Add(ICommand cmd)
         {
@@ -23,59 +27,56 @@ namespace SpaceBattle
             _collection!.Add(cmd);
         }
 
-        public static void LoopInfinity()
-        {
-            _predicateRun = () => true;
-            Loop();
-        }
-        public static void LoopPerCount(int count) 
-        {
-            _predicateRun = () => _countTake < count;
-            Loop();
-        }
-        public static void LoopUntilNotEmpty()
-        {
-            _predicateRun = () => !CollectionIsEmpty();
-            Loop();
-        }
-
         public static void BackgroundLoop()
         {
             new Thread(() =>
             {
-                LoopInfinity();
+                Loop();
             }).Start();
+        }
+
+        public static void LoopPerCount(int count)
+        {
+            _predicate = () => _countTake < count;
+            Loop();
+        }
+
+        public static void LoopUntilNotEmpty()
+        {
+            _predicate = () => _collection!.Count > 0;
+            Loop();
         }
 
         public static void Stop(bool force = false)
         {
             if (force)
-                _predicateRun = () => false;
+                _stop = true;
             else
-                _predicateRun = () => !CollectionIsEmpty();
+                _predicate = () => _collection!.Count > 0;
         }
 
-        private static void Loop()
+
+        public static void Loop()
         {
-            if (CollectionIsNull())
-                return;
-
-            while (_predicateRun())
-            {
-
-
-                var cmd = _collection!.Take();
-                try
+            while (!_stop)
+                if (_predicate())
                 {
-                    cmd.Execute();
-                }
-                catch (Exception ex)
-                {
-                    ExceptionHandler.Handle(cmd, ex).Execute();
-                }
+                    var cmd = _collection!.Take();
+                    try
+                    {
+                        cmd.Execute();
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionHandler.Handle(cmd, ex).Execute();
+                    }
 
-                Interlocked.Increment(ref _countTake);
-            }
+                    Interlocked.Increment(ref _countTake);
+                }
+                else
+                {
+                    _stop = true;
+                }
         }
 
         private static bool CollectionIsEmpty() => _collection?.Count == 0;
