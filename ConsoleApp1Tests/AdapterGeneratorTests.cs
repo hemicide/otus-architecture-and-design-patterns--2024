@@ -94,7 +94,7 @@ namespace SpaceBattle.Tests
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "IMovable.SetPosition", (object[] args) => {
-                return new SetPropertyCommand((UObject)args[0], "location", args[1]);
+                return new WrapperCommand(() => ((UObject)args[0]).SetProperty("location", args[1]));
             }).Execute();
             IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetPosition", (object[] args) => {
                 return ((IUObject)args[0]).GetProperty("location");

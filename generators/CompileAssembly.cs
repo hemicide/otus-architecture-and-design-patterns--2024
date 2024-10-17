@@ -86,7 +86,6 @@ namespace generators
             }}";
         }
 
-        [Obsolete("CompileCode is deprecated, please use CompileCode in CustomAssemblyLoadContext.")]
         private static Assembly CompileCode(string code)
         {
             // Создаем синтаксическое дерево

@@ -19,16 +19,17 @@ namespace SpaceBattle.Tests
         public void TestMethod_LogThrownException()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
             ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new ConsoleOutCommand(e); });
 
             // Act
-            CommandCollection.LoopUntilNotEmpty();
+            commandCollection.LoopUntilNotEmpty();
 
             // Assert
             mock.Verify(c => c.Execute(), Times.Exactly(1));
@@ -41,16 +42,17 @@ namespace SpaceBattle.Tests
         public void TestMethod_RetryWithDelayCommand()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
-            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(new ConsoleOutCommand(e)); });
+            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(commandCollection, new ConsoleOutCommand(e)); });
 
             // Act
-            CommandCollection.LoopUntilNotEmpty();
+            commandCollection.LoopUntilNotEmpty();
 
             // Assert
             mock.Verify(c => c.Execute(), Times.Exactly(1));
@@ -63,19 +65,20 @@ namespace SpaceBattle.Tests
         public void TestMethod_RetryWithDelayCommandThrowExceptions()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
-            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(c); });
+            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(commandCollection, c); });
 
             // Act
-            CommandCollection.LoopPerCount(5);
+            commandCollection.LoopPerCount(5);
 
             // Assert
-            mock.Verify(c => c.Execute(), Times.Exactly(2));
+            mock.Verify(c => c.Execute(), Times.Exactly(5));
         }
 
         /// <summary>
@@ -85,19 +88,21 @@ namespace SpaceBattle.Tests
         public void TestMethod_RetryWithDelayNowCommandThrowExceptions()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
+
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
-            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayNowCommand(c); });
+            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayNowCommand(commandCollection, c); });
 
             // Act
-            CommandCollection.LoopPerCount(10);
+            commandCollection.LoopPerCount(10);
 
             // Assert
-            mock.Verify(c => c.Execute(), Times.Exactly(1));
+            mock.Verify(c => c.Execute(), Times.Exactly(5));
         }
 
         /// <summary>
@@ -107,17 +112,18 @@ namespace SpaceBattle.Tests
         public void TestMethod_FirstRetryThenThrowExceptions()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
-            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(new FirstRetryCommand(c)); });
+            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(commandCollection, new FirstRetryCommand(c)); });
             ExceptionHandler.RegisterHandler(typeof(FirstRetryCommand), typeof(IOException), (c, e) => { return new ConsoleOutCommand(e); });
 
             // Act
-            CommandCollection.LoopUntilNotEmpty();
+            commandCollection.LoopUntilNotEmpty();
 
             // Assert
             mock.Verify(c => c.Execute(), Times.Exactly(2));
@@ -130,18 +136,19 @@ namespace SpaceBattle.Tests
         public void TestMethod_SecondRetryThenThrowExceptions()
         {
             // Arrange
+            var commandCollection = new CommandCollection();
             var mock = new Mock<ICommand>();
             mock.Setup(c => c.Execute()).Callback(() => throw new IOException("IOException"));
 
-            CommandCollection.Add(mock.Object);
+            commandCollection.Add(mock.Object);
 
             // Register handlers
-            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(new FirstRetryCommand(c)); });
-            ExceptionHandler.RegisterHandler(typeof(FirstRetryCommand), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(new SecondRetryCommand(c)); });
+            ExceptionHandler.RegisterHandler(mock.Object.GetType(), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(commandCollection, new FirstRetryCommand(c)); });
+            ExceptionHandler.RegisterHandler(typeof(FirstRetryCommand), typeof(IOException), (c, e) => { return new RetryWithDelayCommand(commandCollection, new SecondRetryCommand(c)); });
             ExceptionHandler.RegisterHandler(typeof(SecondRetryCommand), typeof(IOException), (c, e) => { return new ConsoleOutCommand(e); });
 
             // Act
-            CommandCollection.LoopUntilNotEmpty();
+            commandCollection.LoopUntilNotEmpty();
 
             // Assert
             mock.Verify(c => c.Execute(), Times.Exactly(3));

@@ -10,7 +10,8 @@ namespace SpaceBattle.Commands
     public class RetryWithDelayCommand : ICommand
     {
         ICommand _command;
-        public RetryWithDelayCommand(ICommand c) { _command = c; }
-        public void Execute() => CommandCollection.Add(_command);
+        CommandCollection _commandCollection;
+        public RetryWithDelayCommand(CommandCollection cc, ICommand c) { _commandCollection = cc;  _command = c; }
+        public void Execute() => _commandCollection.Add(_command);
     }
 }

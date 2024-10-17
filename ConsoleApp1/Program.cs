@@ -13,6 +13,8 @@ namespace SpaceBattle
     {
         static void Main(string[] args)
         {
+            var commandCollection = new CommandCollection();
+
             var spaceShip = new SpaceShip(new Vector2(-7, 3), 90, 100, 5f, 100f);
             spaceShip.SetPosition(new Vector2(12, 5));
             spaceShip.SetDirection(10);
@@ -27,14 +29,23 @@ namespace SpaceBattle
             var moveAndBurnFuelCommand = IoC.Resolve<ICommand>("Commands.MoveAndBurnFuel", spaceShip);
             var rotateAndChangeVelocityCommand = IoC.Resolve<ICommand>("Commands.RotateAndChangeVelocity", spaceShip);
 
+            var processingCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Run", Array.Empty<object>());
+            var softStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { /* force */ false });
+            var hardStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { /* force */ true });
+
             // ...
 
-            CommandCollection.Add(moveCommand);
-            CommandCollection.Add(rotateCommand);
-            CommandCollection.Add(moveAndBurnFuelCommand);
-            CommandCollection.Add(rotateAndChangeVelocityCommand);
+            commandCollection.Add(moveCommand);
+            commandCollection.Add(rotateCommand);
+            //CommandCollection.Add(softStopCommandCollection);
+            //CommandCollection.Add(hardStopCommandCollection);
+            commandCollection.Add(moveAndBurnFuelCommand);
+            commandCollection.Add(rotateAndChangeVelocityCommand);
 
-            CommandCollection.LoopUntilNotEmpty();
+            //CommandCollection.LoopUntilNotEmpty();
+
+            processingCommandCollection.Execute();
+            //processingCommandCollection.Execute();
 
             // Генерация адаптора по интерфейсу
 
@@ -56,6 +67,18 @@ namespace SpaceBattle
 
             IoC.Resolve<ICommand>("IoC.Register", "MacroCommand", (object[] args) => {
                 return new MacroCommand(args as IEnumerable<ICommand>);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Run", (object[] args) => {
+                return new StartProcessingCommandCollectionCommand(args[0] as CommandCollection);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Stop", (object[] args) => {
+                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, (bool)args[1]);
+            }).Execute();
+
+            IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.StopHard", (object[] args) => {
+                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, force: (bool)args[1]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.Move", (object[] args) => {
@@ -97,10 +120,7 @@ namespace SpaceBattle
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "IMovable.SetPosition", (object[] args) => {
-                //((UObject)args[0]).SetProperty("location", args[1]);
-                //return (object)true;
-
-                return new SetPropertyCommand((UObject)args[0], "location", args[1]);
+                return new WrapperCommand(() => ((UObject)args[0]).SetProperty("location", args[1]));
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "IMovable.GetPosition", (object[] args) => {
