@@ -12,9 +12,10 @@ namespace SpaceBattle.Commands
 
     public class StopProcessingCommandCollectionCommand : ICommand
     {
+        CommandCollection _commandCollection;
         bool _force = false;
-        public StopProcessingCommandCollectionCommand(bool force) { _force = force; }
+        public StopProcessingCommandCollectionCommand(CommandCollection cc, bool force) { _commandCollection = cc; _force = force; }
 
-        public void Execute() => CommandCollection.Stop(_force);
+        public void Execute() => _commandCollection.Stop(_force);
     }
 }

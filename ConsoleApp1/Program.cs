@@ -13,6 +13,8 @@ namespace SpaceBattle
     {
         static void Main(string[] args)
         {
+            var commandCollection = new CommandCollection();
+
             var spaceShip = new SpaceShip(new Vector2(-7, 3), 90, 100, 5f, 100f);
             spaceShip.SetPosition(new Vector2(12, 5));
             spaceShip.SetDirection(10);
@@ -33,12 +35,12 @@ namespace SpaceBattle
 
             // ...
 
-            CommandCollection.Add(moveCommand);
-            CommandCollection.Add(rotateCommand);
+            commandCollection.Add(moveCommand);
+            commandCollection.Add(rotateCommand);
             //CommandCollection.Add(softStopCommandCollection);
             //CommandCollection.Add(hardStopCommandCollection);
-            CommandCollection.Add(moveAndBurnFuelCommand);
-            CommandCollection.Add(rotateAndChangeVelocityCommand);
+            commandCollection.Add(moveAndBurnFuelCommand);
+            commandCollection.Add(rotateAndChangeVelocityCommand);
 
             //CommandCollection.LoopUntilNotEmpty();
 
@@ -68,15 +70,15 @@ namespace SpaceBattle
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Run", (object[] args) => {
-                return new StartProcessingCommandCollectionCommand();
+                return new StartProcessingCommandCollectionCommand(args[0] as CommandCollection);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Stop", (object[] args) => {
-                return new StopProcessingCommandCollectionCommand(force: (bool)args[0]);
+                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, (bool)args[1]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.StopHard", (object[] args) => {
-                return new StopProcessingCommandCollectionCommand(force: (bool)args[0]);
+                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, force: (bool)args[1]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.Move", (object[] args) => {

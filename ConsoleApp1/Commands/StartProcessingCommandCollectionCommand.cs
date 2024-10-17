@@ -12,8 +12,9 @@ namespace SpaceBattle.Commands
 
     public class StartProcessingCommandCollectionCommand : ICommand
     {
-        public StartProcessingCommandCollectionCommand() { }
+        CommandCollection _commandCollection;
+        public StartProcessingCommandCollectionCommand(CommandCollection cc) { _commandCollection = cc; }
 
-        public void Execute() => CommandCollection.BackgroundLoop();
+        public void Execute() => _commandCollection.BackgroundLoop();
     }
 }

@@ -11,23 +11,29 @@ namespace SpaceBattle
 
     public class CommandCollection
     {
-        public static BlockingCollection<ICommand>? _collection;
-        private static int _countTake = 0;
-        private static bool _stop = false;
-        private static Func<bool> _predicate = () => true;
+        public BlockingCollection<ICommand>? _collection;
+        private int _countTake = 0;
+        private bool _stop = false;
+        private Func<bool> _predicate = () => true;
 
-        public static void Init()
+        public CommandCollection()
         {
             _collection = new BlockingCollection<ICommand>();
         }
 
-        public static void Add(ICommand cmd)
+        public void Clear()
+        {
+            if (_collection != null)
+                while (_collection.TryTake(out _)) { }
+        }
+
+        public void Add(ICommand cmd)
         {
             _collection ??= [];
             _collection!.Add(cmd);
         }
 
-        public static void BackgroundLoop()
+        public void BackgroundLoop()
         {
             new Thread(() =>
             {
@@ -35,19 +41,19 @@ namespace SpaceBattle
             }).Start();
         }
 
-        public static void LoopPerCount(int count)
+        public void LoopPerCount(int count)
         {
             _predicate = () => _countTake < count;
             Loop();
         }
 
-        public static void LoopUntilNotEmpty()
+        public void LoopUntilNotEmpty()
         {
             _predicate = () => _collection!.Count > 0;
             Loop();
         }
 
-        public static void Stop(bool force = false)
+        public void Stop(bool force = false)
         {
             if (force)
                 _stop = true;
@@ -56,7 +62,7 @@ namespace SpaceBattle
         }
 
 
-        public static void Loop()
+        public void Loop()
         {
             while (!_stop)
                 if (_predicate())
@@ -79,7 +85,7 @@ namespace SpaceBattle
                 }
         }
 
-        private static bool CollectionIsEmpty() => _collection?.Count == 0;
-        private static bool CollectionIsNull() => _collection == null;
+        private bool CollectionIsEmpty() => _collection?.Count == 0;
+        private bool CollectionIsNull() => _collection == null;
     }
 }
