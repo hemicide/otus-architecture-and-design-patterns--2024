@@ -29,9 +29,9 @@ namespace SpaceBattle
             var moveAndBurnFuelCommand = IoC.Resolve<ICommand>("Commands.MoveAndBurnFuel", spaceShip);
             var rotateAndChangeVelocityCommand = IoC.Resolve<ICommand>("Commands.RotateAndChangeVelocity", spaceShip);
 
-            var processingCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Run", Array.Empty<object>());
-            var softStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { /* force */ false });
-            var hardStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { /* force */ true });
+            var processingCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Run", new object[] { commandCollection });
+            var softStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { commandCollection, false });
+            var hardStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { commandCollection, true });
 
             // ...
 

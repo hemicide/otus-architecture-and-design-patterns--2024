@@ -93,7 +93,6 @@ namespace SpaceBattle.Tests
             });
             var c1 = new Mock<ICommand>();
             var c2 = new Mock<ICommand>();
-            var c3 = new Mock<ICommand>();
 
 
 
@@ -108,7 +107,6 @@ namespace SpaceBattle.Tests
             commandCollection.Add(c1.Object);
             commandCollection.Add(hardStopCommandCollection);
             commandCollection.Add(c2.Object);
-            commandCollection.Add(c3.Object);
 
             // Assert
 
