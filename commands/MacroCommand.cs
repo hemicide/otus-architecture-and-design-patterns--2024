@@ -20,9 +20,9 @@ namespace commands
                 {
                     cmd.Execute();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw new CommandException();
+                    throw new CommandException("MacroCommand exception", ex);
                 }
             }
         }

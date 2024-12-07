@@ -30,7 +30,7 @@ namespace SpaceBattle.Commands
             foreach (var sector in newSectors) {
                 var gameObjectsBySector = _playfield.GetGameObjectsBySector(sector);
                 foreach (var gameObject in gameObjectsBySector)
-                    cmds.Add(new СheckСcollisionsCommand(gameObject, _movable));
+                    cmds.Add(new СheckСollisionsCommand(gameObject, _movable));
             }
 
             // вызов цепочки проверки коллизий

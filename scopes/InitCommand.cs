@@ -78,17 +78,13 @@ namespace scopes
                     (object[] args) => new RegisterDependencyCommand((string)args[0], (Func<object[], object>)args[1])
                 );
 
-                IoC.Resolve<ICommand>(
-                    "Update Ioc Resolve Dependency Strategy",
-                    (Func<string, object[], object> oldStrategy) =>
-                    (string dependency, object[] args) =>
-                    {
+                IoC.Resolve<ICommand>("Update Ioc Resolve Dependency Strategy", (Func<string, object[], object> oldStrategy) =>
+                    (string dependency, object[] args) => {
                         var scope = currentScopes.Value != null ? currentScopes.Value! : rootScope;
                         var dependencyResolver = new DependencyResolver(scope);
 
                         return dependencyResolver.Resolve(dependency, args);
-                    }
-                ).Execute();
+                    }).Execute();
 
                 _alreadyExecutesScuccessfully = true;
             }

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SpaceBattle.Commands
 {
-    public class СheckСcollisionsCommand : ICommand
+    public class СheckСollisionsCommand : ICommand
     {
         IMovable _gameObject1;
         IMovable _gameObject2;
 
-        public СheckСcollisionsCommand(IMovable obj1, IMovable obj2) { _gameObject1 = obj1; _gameObject2 = obj2; }
+        public СheckСollisionsCommand(IMovable obj1, IMovable obj2) { _gameObject1 = obj1; _gameObject2 = obj2; }
 
         public void Execute()
         {
