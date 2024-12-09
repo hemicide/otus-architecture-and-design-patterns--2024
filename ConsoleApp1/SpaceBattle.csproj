@@ -9,12 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\commands\commands.csproj" />
     <ProjectReference Include="..\factory\factory.csproj" />
-	<ProjectReference Include="..\generators\generators.csproj"/>
+	<ProjectReference Include="..\generators\generators.csproj" />
 	<ProjectReference Include="..\scopes\scopes.csproj" />
   </ItemGroup>
 
