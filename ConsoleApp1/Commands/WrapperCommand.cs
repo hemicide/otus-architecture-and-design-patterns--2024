@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpaceBattle.Commands
 {
+    // Action command
     public class WrapperCommand : ICommand
     {
         Action _action;

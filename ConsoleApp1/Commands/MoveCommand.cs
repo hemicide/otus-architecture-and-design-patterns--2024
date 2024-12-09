@@ -14,6 +14,12 @@ namespace SpaceBattle.Commands
         IMovable _movable;
         public MoveCommand(IMovable obj) { _movable = obj; }
 
-        public void Execute() => _movable.SetPosition(Vector2.Add(_movable.GetPosition(), _movable.GetVelocity()));
+        public void Execute()
+        {
+            var position = _movable.GetPosition();
+            var velocity = _movable.GetVelocity();
+
+            _movable.SetPosition(Vector2.Add(position, velocity));
+        }
     }
 }

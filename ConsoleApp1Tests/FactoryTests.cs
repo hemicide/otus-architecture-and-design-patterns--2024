@@ -56,6 +56,30 @@ namespace SpaceBattle.Tests
         }
 
         [TestMethod]
+        public void Add_Dependency_In_New_Thread_With_Some_Name_Not_Equal()
+        {
+            var parent = IoC.Resolve<object>("IoC.Scope.Current");
+            var threadScope = parent;
+
+            IoC.Resolve<ICommand>("IoC.Register", "someDependency", (object[] args) => (object)1).Execute();
+
+            var thread1 = new Thread(() =>
+            {
+                threadScope = IoC.Resolve<object>("IoC.Scope.Current");
+                IoC.Resolve<ICommand>("IoC.Register", "someDependency", (object[] args) => (object)2).Execute();
+            });
+
+            thread1.Start();
+            thread1.Join();
+
+            Assert.AreEqual(1, IoC.Resolve<int>("someDependency"));
+            Assert.AreNotEqual(parent, threadScope);
+
+            IoC.Resolve<ICommand>("IoC.Scope.Current.Set", threadScope).Execute();
+            Assert.AreEqual(2, IoC.Resolve<int>("someDependency"));
+        }
+
+        [TestMethod]
         public void Parent_Scope_Can_Be_Set_Manually_For_Creating_Scope()
         {
             var scope1 = IoC.Resolve<object>("IoC.Scope.Create");

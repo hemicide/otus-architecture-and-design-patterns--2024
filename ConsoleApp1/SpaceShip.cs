@@ -27,6 +27,16 @@ namespace SpaceBattle
             _fuelTank = fuelTank;
         }
 
+        public SpaceShip(SpaceShip other)
+        {
+            _velocity = other._velocity;
+            _position = other._position;
+            _directionNumber = other._directionNumber;
+            _angularVelocity = other._angularVelocity;
+            _fuelСombustion = other._fuelСombustion;
+            _fuelTank = other._fuelTank;
+        }
+
         public SpaceShip(Vector2 position, Vector2 velocity, int direction, int directionNumber, int angularVelocity, float fuelСombustion, float fuelTank)
         {
             _position = position;

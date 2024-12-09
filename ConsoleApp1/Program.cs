@@ -14,13 +14,12 @@ namespace SpaceBattle
         static void Main(string[] args)
         {
             var commandCollection = new CommandCollection();
-
             var spaceShip = new SpaceShip(new Vector2(-7, 3), 90, 100, 5f, 100f);
             spaceShip.SetPosition(new Vector2(12, 5));
             spaceShip.SetDirection(10);
 
             RegisterExceptionHandlers();
-            DependencyResolve(spaceShip);
+            DependencyResolve();
 
             // ...
 
@@ -28,6 +27,7 @@ namespace SpaceBattle
             var rotateCommand = IoC.Resolve<ICommand>("Commands.Rotate", spaceShip);
             var moveAndBurnFuelCommand = IoC.Resolve<ICommand>("Commands.MoveAndBurnFuel", spaceShip);
             var rotateAndChangeVelocityCommand = IoC.Resolve<ICommand>("Commands.RotateAndChangeVelocity", spaceShip);
+
 
             var processingCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Run", new object[] { commandCollection });
             var softStopCommandCollection = IoC.Resolve<ICommand>("ProcessingCommand.Stop", new object[] { commandCollection, false });
@@ -59,50 +59,50 @@ namespace SpaceBattle
             var velocity = adapter.GetVelocity();
         }
 
-        static void DependencyResolve(SpaceShip spaceShip)
+        static void DependencyResolve()
         {
             new scopes.InitCommand().Execute();
             var iocScope = IoC.Resolve<object>("IoC.Scope.Create");
             IoC.Resolve<ICommand>("IoC.Scope.Current.Set", iocScope).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "MacroCommand", (object[] args) => {
-                return new MacroCommand(args as IEnumerable<ICommand>);
+                return new MacroCommand((IEnumerable<ICommand>)args);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Run", (object[] args) => {
-                return new StartProcessingCommandCollectionCommand(args[0] as CommandCollection);
+                return new StartProcessingCommandCollectionCommand((CommandCollection)args[0]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.Stop", (object[] args) => {
-                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, (bool)args[1]);
+                return new StopProcessingCommandCollectionCommand((CommandCollection)args[0], (bool)args[1]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "ProcessingCommand.StopHard", (object[] args) => {
-                return new StopProcessingCommandCollectionCommand(args[0] as CommandCollection, force: (bool)args[1]);
+                return new StopProcessingCommandCollectionCommand((CommandCollection)args[0], force: (bool)args[1]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.Move", (object[] args) => {
-                return new MoveCommand(spaceShip);
+                return new MoveCommand((IMovable)args[0]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.Rotate", (object[] args) => {
-                return new RotateCommand(spaceShip);
+                return new RotateCommand((IRotable)args[0]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.BurnFuel", (object[] args) => {
-                return new BurnFuelCommand(spaceShip);
+                return new BurnFuelCommand((IFuelBurnable)args[0]);
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.ChangeVelocity", (object[] args) => {
-                return new ChangeVelocityCommand(spaceShip, new Vector2(5, 8));
+                return new ChangeVelocityCommand((IChangeVelocity)args[0], new Vector2(5, 8));
             }).Execute();
 
             IoC.Resolve<ICommand>("IoC.Register", "Commands.MoveAndBurnFuel", (object[] args) => {
                 return new MacroCommand(new List<ICommand>()
                 {
-                    new CheckFuelCommand(spaceShip),
-                    new MoveCommand(spaceShip),
-                    new BurnFuelCommand(spaceShip),
+                    new CheckFuelCommand((IFuelCheckable)args[0]),
+                    new MoveCommand((IMovable)args[0]),
+                    new BurnFuelCommand((IFuelBurnable)args[0]),
                 });
             }).Execute();
 
